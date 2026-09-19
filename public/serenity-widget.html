@@ -420,6 +420,103 @@
       z-index: 2;
     }
 
+    /* Real-Time Position Shift & Re-Ranking Animations */
+    .p1-ticker {
+      will-change: transform, box-shadow;
+      transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.35s ease;
+    }
+    .p1-ticker.rank-promoted {
+      animation: shelf-climb-pulse 1.8s ease-out forwards;
+    }
+    .p1-ticker.rank-demoted {
+      animation: shelf-drop-pulse 1.8s ease-out forwards;
+    }
+    @keyframes shelf-climb-pulse {
+      0% {
+        box-shadow: 0 0 0 2px rgba(0,255,157,0.9), 0 0 22px rgba(0,255,157,0.6);
+        border-color: #00ff9d !important;
+        transform: scale(1.02);
+      }
+      50% {
+        box-shadow: 0 0 0 1px rgba(0,255,157,0.5), 0 0 14px rgba(0,255,157,0.3);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    @keyframes shelf-drop-pulse {
+      0% {
+        box-shadow: 0 0 0 2px rgba(255,184,0,0.85), 0 0 18px rgba(255,184,0,0.5);
+        border-color: #ffb800 !important;
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .runner-card {
+      position: relative;
+      cursor: pointer;
+      background: rgba(4,14,30,0.9);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      will-change: transform, box-shadow;
+      transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease, box-shadow 0.3s ease;
+    }
+    .runner-card.pos-climb {
+      animation: card-climb-pulse 1.8s ease-out forwards;
+    }
+    .runner-card.pos-drop {
+      animation: card-drop-pulse 1.8s ease-out forwards;
+    }
+    @keyframes card-climb-pulse {
+      0% {
+        box-shadow: 0 0 0 2px rgba(0,255,157,0.85), 0 0 24px rgba(0,255,157,0.45);
+        border-color: #00ff9d !important;
+      }
+      50% {
+        box-shadow: 0 0 0 1px rgba(0,255,157,0.4), 0 0 12px rgba(0,255,157,0.2);
+      }
+      100% {
+        box-shadow: 0 0 14px rgba(0,229,255,0.1);
+      }
+    }
+    @keyframes card-drop-pulse {
+      0% {
+        box-shadow: 0 0 0 2px rgba(255,184,0,0.8), 0 0 20px rgba(255,184,0,0.35);
+        border-color: #ffb800 !important;
+      }
+      100% {
+        box-shadow: 0 0 14px rgba(0,229,255,0.1);
+      }
+    }
+    .rank-shift-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.54rem;
+      font-weight: 800;
+      padding: 0 4px;
+      border-radius: 3px;
+      margin-left: 4px;
+      line-height: 1.3;
+    }
+    .rank-shift-badge.up {
+      color: #00ff9d;
+      background: rgba(0,255,157,0.15);
+      border: 1px solid rgba(0,255,157,0.5);
+      text-shadow: 0 0 6px rgba(0,255,157,0.7);
+    }
+    .rank-shift-badge.down {
+      color: #ffb800;
+      background: rgba(255,184,0,0.15);
+      border: 1px solid rgba(255,184,0,0.5);
+      text-shadow: 0 0 6px rgba(255,184,0,0.7);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .p1-ticker,
       .p1-ticker.tick-pulse {
@@ -870,11 +967,22 @@
 
   const P1_SYMBOLS = new Set();
   const p1Cards = {};
+  const prevP1Ranks = {};
+  const p1ShiftTimers = {};
   const pulseTimers = {};
 
   function renderP1TickerShelf(p1Runners) {
     const tickerContainer = document.getElementById("ticker");
     if (!tickerContainer || !p1Runners || p1Runners.length === 0) return;
+
+    // 1. FLIP: Record pre-update bounding boxes
+    const oldRects = {};
+    p1Runners.forEach(r => {
+      const el = p1Cards[r.symbol];
+      if (el && el.parentElement === tickerContainer) {
+        oldRects[r.symbol] = el.getBoundingClientRect();
+      }
+    });
 
     P1_SYMBOLS.clear();
     p1Runners.forEach(r => P1_SYMBOLS.add(r.symbol));
@@ -884,10 +992,17 @@
       const price = Number(r.price) || 0;
       const chg = Number(r.change_pct) || 0;
       const rank = r.rank || idx + 1;
+      const oldRank = prevP1Ranks[symbol];
+      let rankDelta = 0;
+      if (oldRank != null && oldRank !== rank) {
+        rankDelta = oldRank - rank; // positive means moved up in ranking
+      }
+
       let el = p1Cards[symbol];
       if (!el) {
         el = document.createElement("div");
         el.className = "p1-ticker";
+        el.dataset.symbol = symbol;
         tickerContainer.appendChild(el);
         p1Cards[symbol] = el;
       }
@@ -897,14 +1012,35 @@
       const priceFmt = price < 1 ? price.toFixed(4) : price.toFixed(2);
       const chgStr = `${chg >= 0 ? "+" : ""}${chg.toFixed(2)}%`;
 
+      let shiftBadgeHtml = '';
+      if (rankDelta > 0) {
+        shiftBadgeHtml = `<span class="rank-shift-badge up">▲ +${rankDelta}</span>`;
+      } else if (rankDelta < 0) {
+        shiftBadgeHtml = `<span class="rank-shift-badge down">▼ ${rankDelta}</span>`;
+      }
+
       el.innerHTML = `
-        <div class="rank">P1 #${rank}</div>
+        <div class="rank">P1 #${rank} ${shiftBadgeHtml}</div>
         <div class="sym">${symbol}</div>
         <div class="px ${dir}">$${priceFmt}</div>
         <div style="font-size:0.68rem; font-weight:700; color:${chg >= 0 ? "#00ff9d" : "#ff3d71"}; margin-top:3px; text-shadow:0 0 6px ${chg >= 0 ? "rgba(0,255,157,0.5)" : "rgba(255,61,113,0.5)"};">
           ${chgStr}
         </div>
       `;
+
+      if (rankDelta > 0) {
+        el.classList.remove("rank-promoted", "rank-demoted");
+        void el.offsetWidth;
+        el.classList.add("rank-promoted");
+        clearTimeout(p1ShiftTimers[symbol]);
+        p1ShiftTimers[symbol] = setTimeout(() => el.classList.remove("rank-promoted"), 1800);
+      } else if (rankDelta < 0) {
+        el.classList.remove("rank-promoted", "rank-demoted");
+        void el.offsetWidth;
+        el.classList.add("rank-demoted");
+        clearTimeout(p1ShiftTimers[symbol]);
+        p1ShiftTimers[symbol] = setTimeout(() => el.classList.remove("rank-demoted"), 1800);
+      }
 
       if (prev != null && prev !== price) {
         el.classList.remove("tick-pulse");
@@ -916,6 +1052,29 @@
         }, 620);
       }
       prevPrices[symbol] = price;
+      prevP1Ranks[symbol] = rank;
+      tickerContainer.appendChild(el);
+    });
+
+    // 2. FLIP: Invert and play transition
+    requestAnimationFrame(() => {
+      p1Runners.forEach(r => {
+        const el = p1Cards[r.symbol];
+        const oldR = oldRects[r.symbol];
+        if (el && oldR) {
+          const newR = el.getBoundingClientRect();
+          const dx = oldR.left - newR.left;
+          const dy = oldR.top - newR.top;
+          if (dx !== 0 || dy !== 0) {
+            el.style.transform = `translate(${dx}px, ${dy}px)`;
+            el.style.transition = 'none';
+            requestAnimationFrame(() => {
+              el.style.transition = 'transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.35s ease';
+              el.style.transform = '';
+            });
+          }
+        }
+      });
     });
   }
 
@@ -1124,6 +1283,10 @@ async function fetchScanData(tickers) {
     }
   }
 
+  const gridCards = {};
+  const prevGridRanks = {};
+  const gridShiftTimers = {};
+
   function renderCards(rows) {
     if (!cardGridContainer) return;
     if (rows.length === 0) {
@@ -1131,12 +1294,31 @@ async function fetchScanData(tickers) {
       return;
     }
 
-    cardGridContainer.innerHTML = rows.map((r, i) => {
+    // 1. FLIP: Record pre-transition bounding boxes of existing cards
+    const oldRects = {};
+    rows.forEach(r => {
+      const sym = r.symbol;
+      const el = gridCards[sym];
+      if (el && el.parentElement === cardGridContainer) {
+        oldRects[sym] = el.getBoundingClientRect();
+      }
+    });
+
+    const activeSet = new Set();
+
+    rows.forEach((r, i) => {
       const sym = r.symbol || "—";
+      activeSet.add(sym);
       const price = Number(r.price) || 0;
       const chg = Number(r.change_pct) || 0;
       const priceFmt = price < 1 ? price.toFixed(4) : price.toFixed(2);
       const rank = r.rank || i + 1;
+      const oldRank = prevGridRanks[sym];
+      let rankDelta = 0;
+      if (oldRank != null && oldRank !== rank) {
+        rankDelta = oldRank - rank; // positive means moved up in rank
+      }
+
       const tier = r.tier || (rank <= 8 ? "TIER1" : rank <= 26 ? "TIER2" : "WATCH");
       const score = r.score != null ? Number(r.score) : 85;
       const volExp = r.vol_exp || "1.00x";
@@ -1150,62 +1332,133 @@ async function fetchScanData(tickers) {
       const narrativeColor = isSurge ? "#ffb800" : (narrative.includes("REVERSAL") ? "#00e5ff" : "#00ff9d");
       const tierColor = tier === "TIER1" ? "#00e5ff" : (tier === "TIER2" ? "#38bdf8" : "#ffb800");
 
-      return `
-        <div onclick="openDeepValidationModal('${sym}')" style="cursor:pointer; background:rgba(4,14,30,0.9); border:${isSurge ? '1px solid rgba(255,184,0,0.5)' : '1px solid rgba(0,229,255,0.35)'}; border-radius:8px; padding:10px 12px; display:flex; flex-direction:column; gap:8px; box-shadow:${isSurge ? '0 0 16px rgba(255,184,0,0.18)' : '0 0 14px rgba(0,229,255,0.1)'}; transition:transform 0.15s ease, border-color 0.15s ease;" onmouseover="this.style.borderColor='#00ff9d'" onmouseout="this.style.borderColor='${isSurge ? "rgba(255,184,0,0.5)" : "rgba(0,229,255,0.35)"}'">
-          <!-- Top Row: Badge & Source -->
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+      let shiftBadgeHtml = '';
+      if (rankDelta > 0) {
+        shiftBadgeHtml = `<span class="rank-shift-badge up">▲ +${rankDelta}</span>`;
+      } else if (rankDelta < 0) {
+        shiftBadgeHtml = `<span class="rank-shift-badge down">▼ ${rankDelta}</span>`;
+      }
+
+      let el = gridCards[sym];
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "runner-card";
+        el.dataset.symbol = sym;
+        el.onclick = () => openDeepValidationModal(sym);
+        el.onmouseover = () => { el.style.borderColor = '#00ff9d'; };
+        el.onmouseout = () => { el.style.borderColor = isSurge ? 'rgba(255,184,0,0.5)' : 'rgba(0,229,255,0.35)'; };
+        gridCards[sym] = el;
+      }
+
+      el.style.border = isSurge ? '1px solid rgba(255,184,0,0.5)' : '1px solid rgba(0,229,255,0.35)';
+      el.style.boxShadow = isSurge ? '0 0 16px rgba(255,184,0,0.18)' : '0 0 14px rgba(0,229,255,0.1)';
+
+      el.innerHTML = `
+        <!-- Top Row: Badge & Source -->
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center;">
             <span style="font-size:0.62rem; font-weight:800; padding:1px 6px; border-radius:3px; border:1px solid ${tierColor}; color:${tierColor}; background:rgba(0,229,255,0.1); letter-spacing:0.05em; box-shadow:0 0 8px ${tierColor}40;">
               #${rank} ${tier}
             </span>
-            <span style="font-size:0.58rem; color:#55687d; letter-spacing:0.08em;">YAHOO-V8</span>
+            ${shiftBadgeHtml}
           </div>
+          <span style="font-size:0.58rem; color:#55687d; letter-spacing:0.08em;">YAHOO-V8</span>
+        </div>
 
-          <!-- Symbol & Price Row -->
-          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div>
-              <div style="font-size:1.22rem; font-weight:800; color:#ffffff; letter-spacing:0.04em; line-height:1.1;">
-                ${sym}
-              </div>
-              <div style="font-size:0.58rem; color:${narrativeColor}; margin-top:2px; letter-spacing:0.04em; font-weight:700;">
-                ${narrative}
-              </div>
+        <!-- Symbol & Price Row -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:1.22rem; font-weight:800; color:#ffffff; letter-spacing:0.04em; line-height:1.1;">
+              ${sym}
             </div>
-            <div style="text-align:right;">
-              <div style="font-size:1.02rem; font-weight:800; color:#ffffff;">$${priceFmt}</div>
-              <div style="font-size:0.75rem; font-weight:800; color:${chg >= 0 ? '#00ff9d' : '#ff3d71'}; text-shadow:0 0 8px ${chg >= 0 ? 'rgba(0,255,157,0.4)' : 'rgba(255,61,113,0.4)'};">
-                ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%
-              </div>
+            <div style="font-size:0.58rem; color:${narrativeColor}; margin-top:2px; letter-spacing:0.04em; font-weight:700;">
+              ${narrative}
             </div>
           </div>
-
-          <!-- 3-Column Metrics Subgrid -->
-          <div style="background:rgba(2,8,20,0.85); border:1px solid rgba(0,229,255,0.18); border-radius:5px; padding:6px 8px; display:grid; grid-template-columns:repeat(3,1fr); text-align:center; gap:4px;">
-            <div>
-              <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">SCORE</div>
-              <div style="font-size:0.78rem; font-weight:800; color:#ffffff; margin-top:2px;">${score}</div>
+          <div style="text-align:right;">
+            <div style="font-size:1.02rem; font-weight:800; color:#ffffff;">$${priceFmt}</div>
+            <div style="font-size:0.75rem; font-weight:800; color:${chg >= 0 ? '#00ff9d' : '#ff3d71'}; text-shadow:0 0 8px ${chg >= 0 ? 'rgba(0,255,157,0.4)' : 'rgba(255,61,113,0.4)'};">
+              ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%
             </div>
-            <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
-              <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">${floatTo && floatTo !== '—' && floatTo !== volExp ? 'FLOAT T/O' : 'VOL EXP'}</div>
-              <div style="font-size:0.78rem; font-weight:800; color:${isSurge ? '#ffb800' : '#00e5ff'}; margin-top:2px;">${floatTo && floatTo !== '—' && floatTo !== volExp ? floatTo : volExp}</div>
-            </div>
-            <div>
-              <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">RANGE</div>
-              <div style="font-size:0.78rem; font-weight:800; color:#ffffff; margin-top:2px;">${rangeVal}</div>
-            </div>
-          </div>
-
-          <!-- Footer: mom5d & audit status -->
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; border-top:1px solid rgba(255,255,255,0.06); padding-top:6px;">
-            <span style="color:${mom5d >= 0 ? '#00ff9d' : '#ff3d71'}; font-weight:700;">
-              ⚡ mom5d ${mom5d >= 0 ? '+' : ''}${mom5d.toFixed(2)}%
-            </span>
-            <span style="color:#55687d; font-style:italic; font-size:0.58rem;">
-              ${footerStatus}
-            </span>
           </div>
         </div>
+
+        <!-- 3-Column Metrics Subgrid -->
+        <div style="background:rgba(2,8,20,0.85); border:1px solid rgba(0,229,255,0.18); border-radius:5px; padding:6px 8px; display:grid; grid-template-columns:repeat(3,1fr); text-align:center; gap:4px;">
+          <div>
+            <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">SCORE</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#ffffff; margin-top:2px;">${score}</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">${floatTo && floatTo !== '—' && floatTo !== volExp ? 'FLOAT T/O' : 'VOL EXP'}</div>
+            <div style="font-size:0.78rem; font-weight:800; color:${isSurge ? '#ffb800' : '#00e5ff'}; margin-top:2px;">${floatTo && floatTo !== '—' && floatTo !== volExp ? floatTo : volExp}</div>
+          </div>
+          <div>
+            <div style="font-size:0.52rem; color:#687b92; letter-spacing:0.08em;">RANGE</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#ffffff; margin-top:2px;">${rangeVal}</div>
+          </div>
+        </div>
+
+        <!-- Footer: mom5d & audit status -->
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; border-top:1px solid rgba(255,255,255,0.06); padding-top:6px;">
+          <span style="color:${mom5d >= 0 ? '#00ff9d' : '#ff3d71'}; font-weight:700;">
+            ⚡ mom5d ${mom5d >= 0 ? '+' : ''}${mom5d.toFixed(2)}%
+          </span>
+          <span style="color:#55687d; font-style:italic; font-size:0.58rem;">
+            ${footerStatus}
+          </span>
+        </div>
       `;
-    }).join('');
+
+      if (rankDelta > 0) {
+        el.classList.remove("pos-climb", "pos-drop");
+        void el.offsetWidth;
+        el.classList.add("pos-climb");
+        clearTimeout(gridShiftTimers[sym]);
+        gridShiftTimers[sym] = setTimeout(() => el.classList.remove("pos-climb"), 1800);
+      } else if (rankDelta < 0) {
+        el.classList.remove("pos-climb", "pos-drop");
+        void el.offsetWidth;
+        el.classList.add("pos-drop");
+        clearTimeout(gridShiftTimers[sym]);
+        gridShiftTimers[sym] = setTimeout(() => el.classList.remove("pos-drop"), 1800);
+      }
+
+      prevGridRanks[sym] = rank;
+      cardGridContainer.appendChild(el);
+    });
+
+    // Remove expired cards
+    Object.keys(gridCards).forEach(sym => {
+      if (!activeSet.has(sym)) {
+        const el = gridCards[sym];
+        if (el && el.parentElement === cardGridContainer) {
+          cardGridContainer.removeChild(el);
+        }
+      }
+    });
+
+    // 2. FLIP: Invert and animate cards to their new positions
+    requestAnimationFrame(() => {
+      rows.forEach(r => {
+        const sym = r.symbol;
+        const el = gridCards[sym];
+        const oldR = oldRects[sym];
+        if (el && oldR) {
+          const newR = el.getBoundingClientRect();
+          const dx = oldR.left - newR.left;
+          const dy = oldR.top - newR.top;
+          if (dx !== 0 || dy !== 0) {
+            el.style.transform = `translate(${dx}px, ${dy}px)`;
+            el.style.transition = 'none';
+            requestAnimationFrame(() => {
+              el.style.transition = 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease, box-shadow 0.3s ease';
+              el.style.transform = '';
+            });
+          }
+        }
+      });
+    });
   }
 
   function updateTickerTape(data) {
@@ -1224,10 +1477,24 @@ async function fetchScanData(tickers) {
     }).join('');
   }
 
+  const prevTableRanks = {};
+
   function renderTable(rows) {
     if (!tableBody) return;
     tableBody.innerHTML = rows.map((r, i) => {
       const sym = r.symbol || "—";
+      const rank = r.rank || i + 1;
+      const oldRank = prevTableRanks[sym];
+      let rankDelta = 0;
+      if (oldRank != null && oldRank !== rank) {
+        rankDelta = oldRank - rank;
+      }
+      prevTableRanks[sym] = rank;
+
+      let shiftBadge = '';
+      if (rankDelta > 0) shiftBadge = `<span class="rank-shift-badge up">▲ +${rankDelta}</span>`;
+      else if (rankDelta < 0) shiftBadge = `<span class="rank-shift-badge down">▼ ${rankDelta}</span>`;
+
       const price = Number(r.price) || 0;
       const chg = Number(r.change_pct) || 0;
       const volExp = r.vol_exp || "1.00x";
@@ -1242,9 +1509,10 @@ async function fetchScanData(tickers) {
       return `
         <tr>
           <td class="col-symbol">
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div style="display:flex; align-items:center; gap:4px;">
               <span>${sym}</span>
-              <span class="p1-badge ${isSurge ? 'badge-surge' : ''}">#${r.rank || i+1}</span>
+              <span class="p1-badge ${isSurge ? 'badge-surge' : ''}">#${rank}</span>
+              ${shiftBadge}
             </div>
           </td>
           <td style="font-weight:800; font-size:0.88rem;">$${priceFmt}</td>

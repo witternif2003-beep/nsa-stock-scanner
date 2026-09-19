@@ -412,6 +412,34 @@ The frontend widget `public/serenity-widget.html` interfaces directly with this 
 
 ---
 
+### 8.4 Subtle Real-Time Ticker Position Shift & Re-Ranking Animation (FLIP Algorithm)
+
+To provide traders and operators with immediate visual confirmation of live order flow momentum and ranking promotions without disruptive layout thrashing, the Serenity-Ω UI implements the **FLIP (First, Last, Invert, Play)** animation pipeline for both the top P1 Ticker Shelf and the main 4-column Cyber Card Grid:
+
+1. **First**: When a new live tape pulse arrives, the DOM engine queries the initial geometry of all existing equity elements:
+   $$R_{\text{first}}(T) = \langle x_{\text{first}}, y_{\text{first}}, w, h \rangle = \text{getBoundingClientRect}(T)$$
+
+2. **Last**: All runners are re-sorted dynamically by percentage gain and Hawkes convexity score. The DOM nodes are reordered according to their new rank:
+   $$R_{\text{last}}(T) = \langle x_{\text{last}}, y_{\text{last}}, w, h \rangle = \text{getBoundingClientRect}(T)$$
+
+3. **Invert**: The displacement vector is inverted and applied as an instantaneous CSS transform offset:
+   $$\Delta x = x_{\text{first}} - x_{\text{last}}, \quad \Delta y = y_{\text{first}} - y_{\text{last}}$$
+   $$\mathbf{T}_{\text{offset}} = \text{translate}(\Delta x \text{ px}, \Delta y \text{ px})$$
+
+4. **Play**: On the next animation frame, the transform is cleared and animated smoothly back to the origin:
+   $$\mathbf{T}_{\text{active}} = \text{translate}(0, 0) \quad \text{over } 480\text{ms with } \mathcal{C}(0.22, 1.0, 0.36, 1.0)$$
+
+#### Visual Cues & Rank Shift Badging:
+- **Rank Promotion (Ascent)**: When equity $T$ advances in rank ($\Delta \text{Rank} = \text{Rank}_{\text{old}} - \text{Rank}_{\text{new}} > 0$):
+  - Injects dynamic neon emerald badge: `▲ +ΔRank` (e.g. `▲ +2`).
+  - Activates subtle `.pos-climb` keyframe: 1.8s soft radial emerald border bloom (`rgba(0, 255, 157, 0.45)`).
+- **Rank Demotion (Descent)**: When equity $T$ falls in rank ($\Delta \text{Rank} < 0$):
+  - Injects dynamic amber badge: `▼ ΔRank` (e.g. `▼ -1`).
+  - Activates subtle `.pos-drop` keyframe: 1.8s soft amber border bloom (`rgba(255, 184, 0, 0.35)`).
+- **Reduced Motion Support**: Fully respects `@media (prefers-reduced-motion: reduce)`, instantly falling back to zero-transform layout updates for accessibility compliance.
+
+---
+
 ## 9. Comprehensive Recommendation Classification Matrix
 
 ```
@@ -499,10 +527,33 @@ The frontend widget `public/serenity-widget.html` interfaces directly with this 
 - Employs a `Stale-While-Revalidate` caching strategy for HTML, CSS, JavaScript, and fonts.
 - Intercepts failed network requests and immediately renders cached shell, ensuring mobile users never experience a blank error screen.
 
-### C. Vercel Permanent Project Adoption Link
-👉 **[Claim Live Deployment to Your Vercel Account](https://vercel.com/claim-deployment?code=11430e0b-c77e-4ec0-8656-2cd6dd575004)**
-- **Active Deployment URL**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app](https://temporary-zippy-xenon-qbv3a1o.vercel.app)
-- **Direct Serenity Widget**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html](https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html)
-- **PE-BAMM Matching API**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/brain-lab/performance-match?symbol=FEAM](https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/brain-lab/performance-match?symbol=FEAM)
-- **TradingView Real-Time Tape**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan](https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan)
-- Binds project permanently to your Vercel account.
+### C. Vercel Permanent Project Adoption Links (1-Click Claim to Keep Active Forever)
+
+1. **Python 3.13 FastAPI + Vite Production Deployment**:
+   - 👉 **[Claim Python 3.13 Deployment to Vercel](https://vercel.com/claim-deployment?code=d7f9a92b-8878-4570-aca4-9d19e8e60a65)**
+   - **Active URL**: [https://temporary-sonic-cygnus-jwfbqcg.vercel.app](https://temporary-sonic-cygnus-jwfbqcg.vercel.app)
+   - **Live PE-BAMM Engine**: [https://temporary-sonic-cygnus-jwfbqcg.vercel.app/api/brain-lab/performance-match?symbol=FEAM](https://temporary-sonic-cygnus-jwfbqcg.vercel.app/api/brain-lab/performance-match?symbol=FEAM)
+   - **Live Widget**: [https://temporary-sonic-cygnus-jwfbqcg.vercel.app/serenity-widget.html](https://temporary-sonic-cygnus-jwfbqcg.vercel.app/serenity-widget.html)
+   - **Health Endpoint**: [https://temporary-sonic-cygnus-jwfbqcg.vercel.app/api/health](https://temporary-sonic-cygnus-jwfbqcg.vercel.app/api/health)
+
+2. **Unified Edge Serverless Deployment**:
+   - 👉 **[Claim Edge Serverless Deployment to Vercel](https://vercel.com/claim-deployment?code=11430e0b-c77e-4ec0-8656-2cd6dd575004)**
+   - **Active URL**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app](https://temporary-zippy-xenon-qbv3a1o.vercel.app)
+   - **Direct Serenity Widget**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html](https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html)
+   - **TradingView Real-Time Tape**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan](https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan)
+
+---
+
+### D. GitHub Permanent Push & Auto-Deploy Synchronization
+
+To synchronize this repository directly to your GitHub remote `witternif2003-beep/nsa-stock-scanner`:
+```bash
+# Set your GitHub Personal Access Token (with 'repo' and 'workflow' scopes):
+export GH_TOKEN="ghp_YOUR_PERSONAL_ACCESS_TOKEN"
+
+# Push to GitHub main branch:
+git push "https://${GH_TOKEN}@github.com/witternif2003-beep/nsa-stock-scanner.git" main --force
+```
+Once pushed:
+- **GitHub Pages** will immediately trigger `.github/workflows/pages.yml` to publish to the Anycast CDN.
+- If connected to Vercel via GitHub Git integration, **Vercel** will continuously auto-build and deploy every commit with zero manual intervention.
