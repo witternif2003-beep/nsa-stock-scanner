@@ -282,21 +282,23 @@ def fetch_universe_scan(limit: int = 60) -> list[dict]:
             rng = ((close - l52) / (h52 - l52) * 100) if h52 and l52 and (h52 - l52) > 0 else 50.0
             mom5d = perf_w if perf_w is not None else chg
             
-            # Official +900% surge predictive narrative classification
-            if float_to >= 50.0 or (vol_exp >= 10.0 and chg >= 50.0):
-                narrative = "★ +900% PARABOLIC SURGE (FLOAT DRAIN)"
-            elif float_shares and float(float_shares) < 5_000_000 and vol_exp >= 4.0:
-                narrative = "★ ULTRA-LOW FLOAT TURNOVER BURST"
+            # Brain Lab By Liliya: +10,000% Multi-Factor Recommendation Matrix
+            if chg >= 100.0 or float_to >= 100.0:
+                narrative = "★ +10,000% PARABOLIC RUNNER [FLOAT SUPPLY EXTINCTION]"
+            elif float_to >= 50.0 or (vol_exp >= 10.0 and chg >= 50.0):
+                narrative = "★ +900% IMMINENT BREAKOUT [HAWKES CRITICAL CONVEXITY]"
+            elif float_shares and float(float_shares) < 5_000_000 and vol_exp >= 8.0:
+                narrative = "★ P1 TIER-1 SQUEEZE [ULTRA-LOW FLOAT ROTATION]"
             elif pd_metrics["hawkes_intensity"] >= 6.0 or vol_exp >= 20.0:
-                narrative = "★ HAWKES JUMP-DIFFUSION CASCADE"
+                narrative = "★ HAWKES JUMP-DIFFUSION CASCADE (BRANCHING η→1.0)"
             elif pd_metrics["kyle_lambda"] > 1.5 and vol_exp >= 5.0:
-                narrative = "★ KYLE'S LAMBDA LIQUIDITY DRAIN"
+                narrative = "★ ORDER BOOK VACUUM [ASYMMETRIC DEPTH DRAIN]"
             elif chg > 40 or mom5d > 60:
-                narrative = "BULLISH REVERSAL (52W BOTTOM RECLAIM)"
-            elif chg > 10 or mom5d > 15:
-                narrative = "HIGH-VELOCITY CONTINUATION"
+                narrative = "BULLISH MICROSTRUCTURE REVERSAL [VWAP ANCHOR RECLAIM]"
+            elif chg > 15 or mom5d > 20:
+                narrative = "HIGH-VELOCITY CONTINUATION [MOMENTUM DYNAMICS]"
             else:
-                narrative = "MOMENTUM ACCUMULATION"
+                narrative = "MOMENTUM ACCUMULATION [LIQUIDITY BASE]"
             
             price_val = float(close)
             cards.append({
