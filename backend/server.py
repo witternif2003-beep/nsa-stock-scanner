@@ -199,6 +199,11 @@ def load_fallback_universe(limit: int = 60) -> list[dict]:
         if os.path.exists(FALLBACK_FILE):
             with open(FALLBACK_FILE, "r") as f:
                 data = json.load(f)
+                data.sort(key=lambda c: float(c.get("change_pct", 0)), reverse=True)
+                for rank_idx, card in enumerate(data):
+                    r = rank_idx + 1
+                    card["rank"] = r
+                    card["tier"] = "TIER1" if r <= 8 else ("TIER2" if r <= 26 else "WATCH")
                 return data[:limit]
     except Exception:
         pass
