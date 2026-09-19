@@ -548,12 +548,14 @@ async def normalize_path(request, call_next):
 
 @app.get("/api/health")
 @app.get("/health")
+@app.get("/api/health")
 @app.get("/")
 async def health(request: Request = None):
     headers_dict = dict(request.headers) if request else {}
     return {
         "ok": True,
-        "status": "operational",
+        "status": "ok",
+        "state": "operational",
         "system": "NSA STOCK SCANNER · SERENITY-Ω · BRAIN LAB BY LILIYA",
         "ts": datetime.now(timezone.utc).isoformat(),
         "disclaimer": "This is a data-integrity signal, not a legal finding.",
@@ -768,6 +770,21 @@ async def get_brain_lab_watchlist():
         "watchlist_count": len(items),
         "items": items
     }
+
+@app.get("/api/brain-lab/performance-match")
+@app.get("/brain-lab/performance-match")
+async def get_performance_match(symbol: str = "FEAM", spread: float = 0.025, limit: int = 6):
+    sym = symbol.upper().strip()
+    universe = fetch_universe_scan(68)
+    return brain_lab_singleton.find_performance_matched_and_beefed(sym, universe, spread=spread, limit=limit)
+
+@app.post("/api/brain-lab/performance-match")
+async def post_performance_match(payload: dict):
+    sym = (payload.get("symbol") or "FEAM").upper().strip()
+    spread = float(payload.get("spread", 0.025))
+    limit = int(payload.get("limit", 6))
+    universe = fetch_universe_scan(68)
+    return brain_lab_singleton.find_performance_matched_and_beefed(sym, universe, spread=spread, limit=limit)
 
 @app.post("/api/brain-lab/research")
 async def post_brain_lab_research(payload: dict):
