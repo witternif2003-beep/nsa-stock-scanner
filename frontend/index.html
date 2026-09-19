@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" id="viewportMeta" content="width=1280, initial-scale=0.32, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes" />
+  <meta name="theme-color" content="#020712" />
+  <title>NSA STOCK SCANNER · SERENITY-Ω · P1 TIER-1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --void: #02060c;
+  --neon-blue: #5b5bff;
+  --neon-cyan: #00e5ff;
+  --p1-glow-1: 0 0 6px rgba(91,91,255,0.9);
+  --p1-glow-2: 0 0 18px rgba(91,91,255,0.7);
+  --p1-glow-3: 0 0 40px rgba(91,91,255,0.45);
+  --p1-glow-4: 0 0 80px rgba(91,91,255,0.25);
+}
+
+/* ── Base P1 ticker card ── */
+.p1-ticker {
+  position: relative;
+  background: rgba(91,91,255,0.06);
+  border: 1px solid rgba(91,91,255,0.55);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 150px;
+  transition: transform .15s ease, border-color .2s ease, background .2s ease;
+  will-change: box-shadow, transform;
+}
+
+/* ── Idle breathing pulse (slow, 3s) ── */
+.p1-ticker {
+  animation: p1-breathe 3s ease-in-out infinite;
+}
+
+@keyframes p1-breathe {
+  0%, 100% {
+    box-shadow: var(--p1-glow-1), var(--p1-glow-2);
+    border-color: rgba(91,91,255,0.5);
+  }
+  50% {
+    box-shadow: var(--p1-glow-2), var(--p1-glow-3), var(--p1-glow-4);
+    border-color: rgba(91,91,255,0.95);
+  }
+}
+
+/* ── Tick flash (fast, 600ms, triggered on each trade) ── */
+.p1-ticker.tick-pulse {
+  animation: p1-tick 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes p1-tick {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(91,91,255,1),
+      0 0 12px rgba(91,91,255,1),
+      0 0 36px rgba(91,91,255,0.9);
+    transform: scale(1);
+  }
+  40% {
+    box-shadow:
+      0 0 0 6px rgba(91,91,255,0.15),
+      0 0 24px rgba(91,91,255,1),
+      0 0 60px rgba(91,91,255,0.8);
+    transform: scale(1.025);
+  }
+  100% {
+    box-shadow: var(--p1-glow-1), var(--p1-glow-2);
+    transform: scale(1);
+  }
+}
+
+/* ── Symbols and price styling ── */
+.p1-ticker .sym {
+  color: var(--neon-cyan);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-shadow: 0 0 8px rgba(0,229,255,0.8);
+}
+
+.p1-ticker .px {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #e6f1ff;
+  text-shadow: 0 0 10px rgba(91,91,255,0.7);
+  margin-top: 4px;
+}
+
+.p1-ticker .px.up   { color: #00ff9d; text-shadow: 0 0 12px rgba(0,255,157,0.8); }
+.p1-ticker .px.down { color: #ff3d71; text-shadow: 0 0 12px rgba(255,61,113,0.8); }
+
+/* ── Rank badge ── */
+.p1-ticker .rank {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(91,91,255,0.18);
+  border: 1px solid rgba(91,91,255,0.7);
+  color: #b9c9ff;
+  text-shadow: 0 0 6px rgba(91,91,255,0.9);
+  z-index: 2;
+}
+
+/* ── Accessibility: kill animation if user prefers reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .p1-ticker,
+  .p1-ticker.tick-pulse {
+    animation: none !important;
+    box-shadow: 0 0 12px rgba(91,91,255,0.6);
+  }
+}
+  </style>
+  <script>
+    (function() {
+      try {
+        var isIPhone = /iPhone|iPod|iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
+        if (isIPhone || window.innerWidth >= 1200) {
+          document.documentElement.classList.add('desktop-aspect-ratio');
+          var screenW = window.screen.width || window.innerWidth;
+          var scale = Math.max(0.24, Math.min(1.0, screenW / 1280));
+          var meta = document.getElementById('viewportMeta');
+          if (meta) {
+            meta.setAttribute('content', 'width=1280, initial-scale=' + scale.toFixed(2) + ', minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes');
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
+</head>
+<body class="desktop-aspect-ratio">
+  <div id="root">
+    <div class="login-wrap">
+      <div class="glass scanlines login-card" style="text-align: center;">
+        <h1 class="gradient-title">NSA · SERENITY-Ω</h1>
+        <p class="sub">INITIALIZING SECURE ENCLAVE...</p>
+        <div style="font-size: 0.8rem; color: #00e5ff; margin-top: 16px; letter-spacing: 0.1em;">
+          LOADING TERMINAL INTERFACE...
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/index.js"></script>
+</body>
+</html>
