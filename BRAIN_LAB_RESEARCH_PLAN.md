@@ -437,6 +437,8 @@ To provide traders and operators with immediate visual confirmation of live orde
   - Injects dynamic amber badge: `▼ ΔRank` (e.g. `▼ -1`).
   - Activates subtle `.pos-drop` keyframe: 1.8s soft amber border bloom (`rgba(255, 184, 0, 0.35)`).
 - **Reduced Motion Support**: Fully respects `@media (prefers-reduced-motion: reduce)`, instantly falling back to zero-transform layout updates for accessibility compliance.
+- **Autonomous Tape Jitter Stream (`startLiveTapeTickStream()`)**: Every 2,400ms, the engine simulates an organic micro-tick ($\pm 0.08\%$ to $\pm 0.35\%$) across active runners, recalculating relative ranks and executing the FLIP transform pipeline continuously.
+- **Interactive Shift Trigger (`btnSimulateTick`)**: Operators can trigger an instantaneous tick shift via the **`⚡ REAL-TIME TICK SHIFT`** toolbar button to observe immediate FLIP position swaps and rank badge transitions on demand, even when outside regular market hours.
 
 ---
 

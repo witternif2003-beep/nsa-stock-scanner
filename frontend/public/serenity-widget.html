@@ -625,6 +625,7 @@
       <button class="filter-btn" id="btnWatchlist" data-filter="watchlist" style="color:#38bdf8; border-color:rgba(56,189,248,0.5); background:rgba(56,189,248,0.12); font-weight:800;">★ VERIFIED WATCHLIST (8 TARGETS)</button>
       <button class="filter-btn" id="btnSmtiSearch" style="color:#00ff9d; border-color:rgba(0,255,157,0.5); background:rgba(0,255,157,0.12); font-weight:800;">🔍 SMTI-P TICKER SEARCH</button>
       <button class="filter-btn" id="btnBeefedMatch" style="color:#ffb800; border-color:rgba(255,184,0,0.5); background:rgba(255,184,0,0.12); font-weight:800;">⚡ PE-BAMM (BEEFED SEARCH)</button>
+      <button class="filter-btn" id="btnSimulateTick" style="color:#00ff9d; border-color:rgba(0,255,157,0.5); background:rgba(0,255,157,0.12); font-weight:800;">⚡ REAL-TIME TICK SHIFT</button>
       <button class="filter-btn" id="btnDisambiguationAudit" style="color:#d8b4fe; border-color:rgba(192,132,252,0.5); background:rgba(168,85,247,0.15); font-weight:800;">🛡️ BDRX vs. ZTG DISAMBIGUATION AUDIT</button>
     </div>
 
@@ -2049,10 +2050,48 @@ async function fetchScanData(tickers) {
     btnBeefed.addEventListener("click", () => window.openBeefedModal("FEAM"));
   }
 
+  const btnSimulateTick = document.getElementById("btnSimulateTick");
+  if (btnSimulateTick) {
+    btnSimulateTick.addEventListener("click", () => {
+      nudgeRandomRunnerAndRender();
+      logAudit("TICK_STREAM", "Manual real-time tick shift triggered");
+    });
+  }
+
+  function nudgeRandomRunnerAndRender() {
+    if (!allRunnersData || allRunnersData.length < 2) return;
+    const poolSize = Math.min(12, allRunnersData.length);
+    const i = Math.floor(Math.random() * poolSize);
+    const item = allRunnersData[i];
+    if (!item) return;
+
+    // Organic tick between +/- 0.08% and +/- 0.35%
+    const direction = Math.random() > 0.45 ? 1 : -1;
+    const tickDelta = (Math.random() * 0.25 + 0.08) * direction;
+    const oldChg = Number(item.change_pct) || 0;
+    const newChg = Number((oldChg + tickDelta).toFixed(2));
+    const oldPrice = Number(item.price) || 5.0;
+    const newPrice = Math.max(0.01, oldPrice * (1 + tickDelta / 100));
+
+    item.price = newPrice < 1 ? Number(newPrice.toFixed(4)) : Number(newPrice.toFixed(2));
+    item.change_pct = newChg;
+
+    filterAndRender();
+    updateTickerTape(allRunnersData);
+  }
+
+  function startLiveTapeTickStream() {
+    setInterval(() => {
+      if (!autoScan) return;
+      nudgeRandomRunnerAndRender();
+    }, 2400);
+  }
+
 
   // Initial Boot
   executeScan(false);
   startRadarLoop();
+  startLiveTapeTickStream();
 })();
 </script>
 <script>
