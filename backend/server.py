@@ -1,3 +1,4 @@
+from brain_lab import brain_lab_singleton
 # backend/server.py
 # NSA STOCK SCANNER · SERENITY-Ω — FastAPI backend
 # Stack: FastAPI + Motor (async MongoDB) + yfinance + JWT auth
@@ -623,6 +624,49 @@ async def background_realtime_refresher():
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(background_realtime_refresher())
+
+
+@app.get("/api/brain-lab")
+@app.get("/brain-lab")
+async def get_brain_lab_status():
+    telemetry = brain_lab_singleton.get_system_telemetry()
+    # Populate top 4 runner research dossiers automatically
+    runners = await fetch_universe_scan(limit=4)
+    dossiers = []
+    for r in runners:
+        d = brain_lab_singleton.synthesize_research_dossier(
+            symbol=r.get("symbol", ""),
+            price=float(r.get("price", 0)),
+            change_pct=float(r.get("change_pct", 0)),
+            volume=int(r.get("volume", 0)),
+            float_turnover=float(r.get("float_turnover", 1.0)),
+            gk_vol=float(r.get("gk_vol", 50.0)),
+            kyle_lambda=float(r.get("kyle_lambda", 0.05)),
+            hawkes_intensity=float(r.get("hawkes_intensity", 1.2))
+        )
+        dossiers.append(d)
+    return {
+        "telemetry": telemetry,
+        "active_dossiers": dossiers,
+        "research_plan_status": "ACTIVE_SYSTEM_WIDE",
+        "postdoc_lead": "Brain Lab By Liliya"
+    }
+
+@app.post("/api/brain-lab/research")
+async def post_brain_lab_research(payload: dict):
+    sym = (payload.get("symbol") or "IMCC").upper()
+    quote = await fetch_yahoo_v8_quote(sym)
+    dossier = brain_lab_singleton.synthesize_research_dossier(
+        symbol=sym,
+        price=float(quote.get("regularMarketPrice", 1.0)),
+        change_pct=float(quote.get("regularMarketChangePercent", 10.0)),
+        volume=int(quote.get("regularMarketVolume", 100000)),
+        float_turnover=float(quote.get("float_turnover", 5.0)),
+        gk_vol=float(quote.get("gk_vol", 65.0)),
+        kyle_lambda=float(quote.get("kyle_lambda", 0.12)),
+        hawkes_intensity=float(quote.get("hawkes_intensity", 2.4))
+    )
+    return dossier
 
 @app.get("/api/ecc-audit")
 @app.get("/ecc-audit")
