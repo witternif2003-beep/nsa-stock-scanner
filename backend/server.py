@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from brain_lab import brain_lab_singleton
 # backend/server.py
 # NSA STOCK SCANNER · SERENITY-Ω — FastAPI backend
@@ -52,7 +53,51 @@ JWT_EXP_HOURS = 8
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASS = os.getenv("ADMIN_PASS", "nsa-admin")
 
-app = FastAPI(title="NSA STOCK SCANNER · SERENITY-Ω", version="1.0.0")
+async def background_realtime_refresher():
+    global latest_universe_cache
+    while True:
+        try:
+            loop = asyncio.get_running_loop()
+            cards = await loop.run_in_executor(None, fetch_universe_scan, 60)
+            if cards:
+                latest_universe_cache = cards
+                if manager.active_connections:
+                    await manager.broadcast({
+                        "type": "rank_update",
+                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "total": len(cards),
+                        "cards": cards
+                    })
+        except asyncio.CancelledError:
+            break
+        except Exception:
+            pass
+        await asyncio.sleep(3.0)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # --- Brain Lab Initialization Pipeline ---
+    global latest_universe_cache
+    try:
+        latest_universe_cache = load_fallback_universe(60)
+    except Exception as e:
+        logger.warning(f"Universe cache pre-warm warning: {e}")
+
+    refresher_task = None
+    is_serverless = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+    if not is_serverless:
+        refresher_task = asyncio.create_task(background_realtime_refresher())
+
+    yield
+
+    if refresher_task:
+        refresher_task.cancel()
+        try:
+            await refresher_task
+        except asyncio.CancelledError:
+            pass
+
+app = FastAPI(title="NSA STOCK SCANNER · SERENITY-Ω · BRAIN LAB BY LILIYA", version="3.2.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -604,28 +649,7 @@ async def websocket_symbol_stream(websocket: WebSocket, symbol: str):
     except (WebSocketDisconnect, Exception):
         manager.disconnect(websocket)
 
-async def background_realtime_refresher():
-    global latest_universe_cache
-    while True:
-        try:
-            loop = asyncio.get_event_loop()
-            cards = await loop.run_in_executor(None, fetch_universe_scan, 60)
-            if cards:
-                latest_universe_cache = cards
-                if manager.active_connections:
-                    await manager.broadcast({
-                        "type": "rank_update",
-                        "ts": datetime.now(timezone.utc).isoformat(),
-                        "total": len(cards),
-                        "cards": cards
-                    })
-        except Exception:
-            pass
-        await asyncio.sleep(3.0)
 
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(background_realtime_refresher())
 
 
 @app.get("/api/brain-lab")
