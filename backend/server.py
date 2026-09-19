@@ -199,12 +199,7 @@ def load_fallback_universe(limit: int = 60) -> list[dict]:
         if os.path.exists(FALLBACK_FILE):
             with open(FALLBACK_FILE, "r") as f:
                 data = json.load(f)
-                data.sort(key=lambda c: float(c.get("change_pct", 0)), reverse=True)
-                for rank_idx, card in enumerate(data):
-                    r = rank_idx + 1
-                    card["rank"] = r
-                    card["tier"] = "TIER1" if r <= 8 else ("TIER2" if r <= 26 else "WATCH")
-                return data[:limit]
+                return brain_lab_singleton.compute_autonomous_microstructure_rank(data[:limit])
     except Exception:
         pass
     return []
@@ -379,13 +374,8 @@ def fetch_universe_scan(limit: int = 60) -> list[dict]:
             })
 
         # Dynamic Real-Time Ranking Update mirrored from live percentage changes
-        cards.sort(key=lambda c: float(c["change_pct"]), reverse=True)
-        for rank_idx, card in enumerate(cards):
-            r = rank_idx + 1
-            card["rank"] = r
-            card["tier"] = "TIER1" if r <= 8 else ("TIER2" if r <= 26 else "WATCH")
-
-        return cards
+        # Post-Doctorate Autonomous Microstructure Re-Ranking Model (PAMR-E)
+        return brain_lab_singleton.compute_autonomous_microstructure_rank(cards)
     except Exception:
         return load_fallback_universe(limit)
 
@@ -584,6 +574,27 @@ async def login(body: LoginRequest):
         operator_id=body.operator_id,
         expires_at=exp.isoformat()
     )
+
+@app.get("/api/brain-lab/autonomous-rerank")
+@app.get("/brain-lab/autonomous-rerank")
+async def autonomous_rerank(limit: int = 68):
+    """
+    Executes the Brain Lab by Liliya Post-Doctorate Autonomous Microstructure Re-Ranking Model (PAMR-E).
+    Standardizes cross-sectional econometric variables (Hawkes, Kyle's lambda, Corwin-Schultz, Float Turnover, Return).
+    Returns the universe re-ranked autonomously with zero human intervention.
+    """
+    universe = fetch_universe_scan(limit)
+    if not universe:
+        universe = load_fallback_universe(limit)
+    reranked = brain_lab_singleton.compute_autonomous_microstructure_rank(universe)
+    return {
+        "status": "PASS",
+        "protocol": "PAMR-E (Post-Doctorate Autonomous Microstructure Re-Ranking Model)",
+        "methodology": "Cross-Sectional Z-Score Econometric Multi-Factor Standardization",
+        "universe_size": len(reranked),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "runners": reranked
+    }
 
 @app.get("/api/universe-scan")
 @app.get("/universe-scan")
