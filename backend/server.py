@@ -500,17 +500,17 @@ async def normalize_path(request, call_next):
 @app.get("/api/health")
 @app.get("/health")
 @app.get("/")
-async def health(request: Request):
-    headers_dict = dict(request.headers)
+async def health(request: Request = None):
+    headers_dict = dict(request.headers) if request else {}
     return {
         "ok": True,
         "status": "operational",
-        "system": "NSA STOCK SCANNER · SERENITY-Ω",
+        "system": "NSA STOCK SCANNER · SERENITY-Ω · BRAIN LAB BY LILIYA",
         "ts": datetime.now(timezone.utc).isoformat(),
         "disclaimer": "This is a data-integrity signal, not a legal finding.",
-        "request_path": request.scope.get("path"),
-        "raw_path": request.scope.get("raw_path", b"").decode(errors="ignore"),
-        "query_string": request.scope.get("query_string", b"").decode(errors="ignore"),
+        "request_path": request.scope.get("path") if request else "/health",
+        "raw_path": request.scope.get("raw_path", b"").decode(errors="ignore") if request else "",
+        "query_string": request.scope.get("query_string", b"").decode(errors="ignore") if request else "",
         "x_matched_path": headers_dict.get("x-matched-path"),
         "x_now_route_matches": headers_dict.get("x-now-route-matches"),
     }

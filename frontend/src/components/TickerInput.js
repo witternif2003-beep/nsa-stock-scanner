@@ -71,7 +71,7 @@ export default function TickerInput({
             boxShadow: activeFilter === 'surge' ? '0 0 10px rgba(255,184,0,0.3)' : 'none',
           }}
         >
-          ★ +900% IMMINENT SURGES
+          ★ +10,000% / +900% RECOMMENDATIONS
         </button>
         <button
           type="button"

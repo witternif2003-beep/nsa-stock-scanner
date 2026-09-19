@@ -321,14 +321,20 @@ export default function Terminal({ token, operator, onLogout }) {
     }
   };
 
-  const activeDisplayCards = (universeCards.length > 0 ? universeCards : results).filter((c) => {
+  const sortedCards = [...(universeCards.length > 0 ? universeCards : results)].sort((a, b) => (Number(b.change_pct) || 0) - (Number(a.change_pct) || 0));
+  sortedCards.forEach((c, idx) => {
+    c.rank = idx + 1;
+    c.tier = c.rank <= 8 ? 'TIER1' : (c.rank <= 26 ? 'TIER2' : 'WATCH');
+  });
+
+  const activeDisplayCards = sortedCards.filter((c) => {
     if (activeFilter === 'surge') {
       const n = c.narrative || '';
-      return n.includes('900%') || n.includes('ULTRA-LOW') || n.includes('HAWKES');
+      return n.includes('10,000%') || n.includes('900%') || n.includes('ULTRA-LOW') || n.includes('HAWKES') || n.includes('VACUUM') || n.includes('SQUEEZE');
     }
     if (activeFilter === 'tier1') return c.tier === 'TIER1';
     if (activeFilter === 'reversal') return (c.narrative || '').includes('REVERSAL');
-    if (activeFilter === 'continuation') return (c.narrative || '').includes('CONTINUATION');
+    if (activeFilter === 'continuation') return (c.narrative || '').includes('CONTINUATION') || (c.narrative || '').includes('MOMENTUM');
     return true;
   });
 
