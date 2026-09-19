@@ -500,5 +500,9 @@ The frontend widget `public/serenity-widget.html` interfaces directly with this 
 - Intercepts failed network requests and immediately renders cached shell, ensuring mobile users never experience a blank error screen.
 
 ### C. Vercel Permanent Project Adoption Link
-👉 **[Claim Live Deployment to Your Vercel Account](https://vercel.com/claim-deployment?code=471c2b45-22c7-47f8-ac89-a9d2cfe18e20)**
-- Binds project permanently to your Vercel account (`nicks-projects-128db960`).
+👉 **[Claim Live Deployment to Your Vercel Account](https://vercel.com/claim-deployment?code=11430e0b-c77e-4ec0-8656-2cd6dd575004)**
+- **Active Deployment URL**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app](https://temporary-zippy-xenon-qbv3a1o.vercel.app)
+- **Direct Serenity Widget**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html](https://temporary-zippy-xenon-qbv3a1o.vercel.app/serenity-widget.html)
+- **PE-BAMM Matching API**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/brain-lab/performance-match?symbol=FEAM](https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/brain-lab/performance-match?symbol=FEAM)
+- **TradingView Real-Time Tape**: [https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan](https://temporary-zippy-xenon-qbv3a1o.vercel.app/api/universe-scan)
+- Binds project permanently to your Vercel account.
