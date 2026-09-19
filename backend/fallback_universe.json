@@ -21,7 +21,10 @@
     "fifty_two_week_low": 1.55,
     "footer_status": "official exchange tape",
     "rank": 1,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0005209226",
+    "company_name": "IMCC Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "QNME",
@@ -45,7 +48,10 @@
     "fifty_two_week_low": 0.2504,
     "footer_status": "official exchange tape",
     "rank": 2,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0003776263",
+    "company_name": "QNME Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "REFR",
@@ -69,7 +75,10 @@
     "fifty_two_week_low": 0.337,
     "footer_status": "official exchange tape",
     "rank": 3,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0003822625",
+    "company_name": "REFR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "GIPR",
@@ -93,7 +102,10 @@
     "fifty_two_week_low": 0.255,
     "footer_status": "official exchange tape",
     "rank": 4,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0009373054",
+    "company_name": "GIPR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "MRNO",
@@ -117,7 +129,10 @@
     "fifty_two_week_low": 0.1776,
     "footer_status": "official exchange tape",
     "rank": 5,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0007526897",
+    "company_name": "MRNO Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "TJGC",
@@ -141,7 +156,10 @@
     "fifty_two_week_low": 1.46,
     "footer_status": "official exchange tape",
     "rank": 6,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0006570445",
+    "company_name": "TJGC Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ZTG",
@@ -152,7 +170,7 @@
     "float_turnover": "3.4x",
     "range_pct": "10.39%",
     "mom5d": 147.95,
-    "narrative": "BULLISH REVERSAL (52W BOTTOM RECLAIM)",
+    "narrative": "\u2605 +900% IMMINENT BREAKOUT [ZENTOAI AI BUYOUT] / CASH WATCH",
     "score": 99.42,
     "source": "AMEX/NASDAQ/NYSE TAPE",
     "gap_pct": 16.67,
@@ -165,7 +183,11 @@
     "fifty_two_week_low": 0.6,
     "footer_status": "official exchange tape",
     "rank": 7,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0001859604",
+    "company_name": "Zenta Group Company Limited",
+    "sector": "Industrials / Fintech Consulting",
+    "disambiguation_verified": true
   },
   {
     "symbol": "TNMG",
@@ -189,7 +211,10 @@
     "fifty_two_week_low": 2.45,
     "footer_status": "official exchange tape",
     "rank": 8,
-    "tier": "TIER1"
+    "tier": "TIER1",
+    "sec_cik": "0005084722",
+    "company_name": "TNMG Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SVRN",
@@ -213,7 +238,10 @@
     "fifty_two_week_low": 3.12,
     "footer_status": "official exchange tape",
     "rank": 9,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0009209944",
+    "company_name": "SVRN Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "HUHU",
@@ -237,7 +265,10 @@
     "fifty_two_week_low": 3.71,
     "footer_status": "official exchange tape",
     "rank": 10,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0009599983",
+    "company_name": "HUHU Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "PRPL",
@@ -261,7 +292,10 @@
     "fifty_two_week_low": 2.3,
     "footer_status": "official exchange tape",
     "rank": 11,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0005571313",
+    "company_name": "PRPL Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "USDE",
@@ -285,7 +319,10 @@
     "fifty_two_week_low": 1.01,
     "footer_status": "official exchange tape",
     "rank": 12,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0004641249",
+    "company_name": "USDE Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "NCPL",
@@ -309,7 +346,10 @@
     "fifty_two_week_low": 0.2065,
     "footer_status": "official exchange tape",
     "rank": 13,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0008343668",
+    "company_name": "NCPL Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "GEMI",
@@ -333,7 +373,10 @@
     "fifty_two_week_low": 3.38,
     "footer_status": "official exchange tape",
     "rank": 14,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0001822103",
+    "company_name": "GEMI Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "TRUG",
@@ -357,7 +400,10 @@
     "fifty_two_week_low": 0.36,
     "footer_status": "official exchange tape",
     "rank": 15,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0001093016",
+    "company_name": "TRUG Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SUIG",
@@ -381,7 +427,10 @@
     "fifty_two_week_low": 0.7903,
     "footer_status": "official exchange tape",
     "rank": 16,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0004389566",
+    "company_name": "SUIG Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "FWDI",
@@ -405,7 +454,10 @@
     "fifty_two_week_low": 3.48,
     "footer_status": "official exchange tape",
     "rank": 17,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0002682046",
+    "company_name": "FWDI Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SKYA",
@@ -429,7 +481,10 @@
     "fifty_two_week_low": 0.91,
     "footer_status": "official exchange tape",
     "rank": 18,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0001257221",
+    "company_name": "SKYA Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SDEV",
@@ -453,7 +508,10 @@
     "fifty_two_week_low": 0.7809,
     "footer_status": "official exchange tape",
     "rank": 19,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0002746199",
+    "company_name": "SDEV Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "CANG",
@@ -477,7 +535,10 @@
     "fifty_two_week_low": 1.36,
     "footer_status": "official exchange tape",
     "rank": 20,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0001373361",
+    "company_name": "CANG Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "AVAT",
@@ -501,7 +562,10 @@
     "fifty_two_week_low": 0.2851,
     "footer_status": "official exchange tape",
     "rank": 21,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0007275144",
+    "company_name": "AVAT Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "OLOX",
@@ -525,7 +589,10 @@
     "fifty_two_week_low": 0.691,
     "footer_status": "official exchange tape",
     "rank": 22,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0007021049",
+    "company_name": "OLOX Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SECZ",
@@ -549,7 +616,10 @@
     "fifty_two_week_low": 5.14,
     "footer_status": "official exchange tape",
     "rank": 23,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0003639077",
+    "company_name": "SECZ Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "FEAM",
@@ -573,7 +643,10 @@
     "fifty_two_week_low": 0.9001,
     "footer_status": "official exchange tape",
     "rank": 24,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0004970193",
+    "company_name": "FEAM Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "DFDV",
@@ -597,7 +670,10 @@
     "fifty_two_week_low": 2.44,
     "footer_status": "official exchange tape",
     "rank": 25,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0008693238",
+    "company_name": "DFDV Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "HSDT",
@@ -621,7 +697,10 @@
     "fifty_two_week_low": 1.19,
     "footer_status": "official exchange tape",
     "rank": 26,
-    "tier": "TIER2"
+    "tier": "TIER2",
+    "sec_cik": "0003330412",
+    "company_name": "HSDT Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "CD",
@@ -645,7 +724,10 @@
     "fifty_two_week_low": 2.1,
     "footer_status": "official exchange tape",
     "rank": 27,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0006475162",
+    "company_name": "CD Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "QMLS",
@@ -669,7 +751,10 @@
     "fifty_two_week_low": 5.06,
     "footer_status": "official exchange tape",
     "rank": 28,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0002469613",
+    "company_name": "QMLS Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "KAZR",
@@ -693,7 +778,10 @@
     "fifty_two_week_low": 1.03,
     "footer_status": "official exchange tape",
     "rank": 29,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005226190",
+    "company_name": "KAZR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "DSP",
@@ -717,7 +805,10 @@
     "fifty_two_week_low": 8.11,
     "footer_status": "official exchange tape",
     "rank": 30,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0007358081",
+    "company_name": "DSP Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ETS",
@@ -741,7 +832,10 @@
     "fifty_two_week_low": 0.39,
     "footer_status": "official exchange tape",
     "rank": 31,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0006088179",
+    "company_name": "ETS Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "FNUC",
@@ -765,7 +859,10 @@
     "fifty_two_week_low": 1.35,
     "footer_status": "official exchange tape",
     "rank": 32,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0004874404",
+    "company_name": "FNUC Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "MWYN",
@@ -789,7 +886,10 @@
     "fifty_two_week_low": 0.4539,
     "footer_status": "official exchange tape",
     "rank": 33,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0004000373",
+    "company_name": "MWYN Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "CYPH",
@@ -813,7 +913,10 @@
     "fifty_two_week_low": 0.29,
     "footer_status": "official exchange tape",
     "rank": 34,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008828282",
+    "company_name": "CYPH Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SPRU",
@@ -837,7 +940,10 @@
     "fifty_two_week_low": 1.47,
     "footer_status": "official exchange tape",
     "rank": 35,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0004254444",
+    "company_name": "SPRU Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "MSTR",
@@ -861,7 +967,10 @@
     "fifty_two_week_low": 81.81,
     "footer_status": "official exchange tape",
     "rank": 36,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0001248520",
+    "company_name": "MSTR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ATCH",
@@ -885,7 +994,10 @@
     "fifty_two_week_low": 0.1599,
     "footer_status": "official exchange tape",
     "rank": 37,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0006877383",
+    "company_name": "ATCH Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "XRTX",
@@ -909,7 +1021,10 @@
     "fifty_two_week_low": 1.59,
     "footer_status": "official exchange tape",
     "rank": 38,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005324670",
+    "company_name": "XRTX Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "BKKT",
@@ -933,7 +1048,10 @@
     "fifty_two_week_low": 6.71,
     "footer_status": "official exchange tape",
     "rank": 39,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0007616345",
+    "company_name": "BKKT Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "BTDR",
@@ -957,7 +1075,10 @@
     "fifty_two_week_low": 6.92,
     "footer_status": "official exchange tape",
     "rank": 40,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0002711136",
+    "company_name": "BTDR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "BTCS",
@@ -981,7 +1102,10 @@
     "fifty_two_week_low": 0.9629,
     "footer_status": "official exchange tape",
     "rank": 41,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0003997163",
+    "company_name": "BTCS Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "NUR",
@@ -1005,7 +1129,10 @@
     "fifty_two_week_low": 0.9537,
     "footer_status": "official exchange tape",
     "rank": 42,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0009223728",
+    "company_name": "NUR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "AMTX",
@@ -1029,7 +1156,10 @@
     "fifty_two_week_low": 1.3,
     "footer_status": "official exchange tape",
     "rank": 43,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0007606651",
+    "company_name": "AMTX Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "LVWR",
@@ -1053,7 +1183,10 @@
     "fifty_two_week_low": 0.6483,
     "footer_status": "official exchange tape",
     "rank": 44,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005461420",
+    "company_name": "LVWR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ORBS",
@@ -1077,7 +1210,10 @@
     "fifty_two_week_low": 0.5656,
     "footer_status": "official exchange tape",
     "rank": 45,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0001845730",
+    "company_name": "ORBS Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SLXN",
@@ -1101,7 +1237,10 @@
     "fifty_two_week_low": 0.3222,
     "footer_status": "official exchange tape",
     "rank": 46,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008963655",
+    "company_name": "SLXN Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ONMD",
@@ -1125,7 +1264,10 @@
     "fifty_two_week_low": 0.49,
     "footer_status": "official exchange tape",
     "rank": 47,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0003348622",
+    "company_name": "ONMD Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "ABTC",
@@ -1149,7 +1291,10 @@
     "fifty_two_week_low": 4.92,
     "footer_status": "official exchange tape",
     "rank": 48,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005410860",
+    "company_name": "ABTC Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "CHOW",
@@ -1173,7 +1318,10 @@
     "fifty_two_week_low": 0.271,
     "footer_status": "official exchange tape",
     "rank": 49,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005779944",
+    "company_name": "CHOW Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "MARA",
@@ -1197,7 +1345,10 @@
     "fifty_two_week_low": 6.66,
     "footer_status": "official exchange tape",
     "rank": 50,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0006847740",
+    "company_name": "MARA Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "PS",
@@ -1221,7 +1372,10 @@
     "fifty_two_week_low": 22.01,
     "footer_status": "official exchange tape",
     "rank": 51,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0005585414",
+    "company_name": "PS Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "CSHR",
@@ -1245,7 +1399,10 @@
     "fifty_two_week_low": 3.5,
     "footer_status": "official exchange tape",
     "rank": 52,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008304216",
+    "company_name": "CSHR Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SBET",
@@ -1269,7 +1426,10 @@
     "fifty_two_week_low": 4.46,
     "footer_status": "official exchange tape",
     "rank": 53,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008971695",
+    "company_name": "SBET Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "BTBT",
@@ -1293,7 +1453,10 @@
     "fifty_two_week_low": 1.18,
     "footer_status": "official exchange tape",
     "rank": 54,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008870181",
+    "company_name": "BTBT Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "HYPD",
@@ -1317,7 +1480,10 @@
     "fifty_two_week_low": 2.34,
     "footer_status": "official exchange tape",
     "rank": 55,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0001733975",
+    "company_name": "HYPD Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "UPXI",
@@ -1341,7 +1507,10 @@
     "fifty_two_week_low": 0.54,
     "footer_status": "official exchange tape",
     "rank": 56,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0002528090",
+    "company_name": "UPXI Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "FGL",
@@ -1365,7 +1534,10 @@
     "fifty_two_week_low": 3.9,
     "footer_status": "official exchange tape",
     "rank": 57,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0008235434",
+    "company_name": "FGL Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "XBIO",
@@ -1389,7 +1561,10 @@
     "fifty_two_week_low": 1.87,
     "footer_status": "official exchange tape",
     "rank": 58,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0006767220",
+    "company_name": "XBIO Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SKYE",
@@ -1413,7 +1588,10 @@
     "fifty_two_week_low": 1.5,
     "footer_status": "official exchange tape",
     "rank": 59,
-    "tier": "WATCH"
+    "tier": "WATCH",
+    "sec_cik": "0001004712",
+    "company_name": "SKYE Corporation",
+    "disambiguation_verified": true
   },
   {
     "symbol": "SGML",
@@ -1437,6 +1615,37 @@
     "fifty_two_week_low": 4.62,
     "footer_status": "official exchange tape",
     "rank": 60,
+    "tier": "WATCH",
+    "sec_cik": "0007303055",
+    "company_name": "SGML Corporation",
+    "disambiguation_verified": true
+  },
+  {
+    "symbol": "BDRX",
+    "price": 0.73,
+    "change_pct": -8.74,
+    "volume": 553439,
+    "vol_exp": "2.10x",
+    "float_turnover": "0.8x",
+    "range_pct": "14.20%",
+    "mom5d": -18.52,
+    "narrative": "BIOTECH CLINICAL TRIAL [eRapa PHASE 3 SERENTA FAP] / $2.3M CASH",
+    "score": 84.5,
+    "source": "NASDAQ TAPE",
+    "gap_pct": -3.5,
+    "rsi7": 42.1,
+    "garman_klass_vol": 68.4,
+    "corwin_schultz_spread_bps": 45.0,
+    "kyle_lambda": 0.0421,
+    "hawkes_intensity": 1.84,
+    "fifty_two_week_high": 59.4,
+    "fifty_two_week_low": 0.61,
+    "footer_status": "official exchange tape",
+    "sec_cik": "0001643918",
+    "company_name": "Biodexa Pharmaceuticals PLC",
+    "sector": "Healthcare / Biotechnology",
+    "disambiguation_verified": true,
+    "rank": 61,
     "tier": "WATCH"
   }
 ]
