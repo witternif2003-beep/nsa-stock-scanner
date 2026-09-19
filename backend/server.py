@@ -750,6 +750,25 @@ async def post_brain_lab_validate(payload: dict):
             pass
     return brain_lab_singleton.validate_ticker_deep(sym, quote)
 
+@app.get("/api/brain-lab/similar-tickers")
+@app.get("/brain-lab/similar-tickers")
+async def get_similar_tickers(q: str = "FAC"):
+    return brain_lab_singleton.identify_similar_or_identical_tickers(q)
+
+@app.get("/api/brain-lab/watchlist")
+@app.get("/brain-lab/watchlist")
+async def get_brain_lab_watchlist():
+    target_symbols = ["IACO", "HIVE", "GLOO", "FATN", "FAC", "FEAM", "DC", "FISN"]
+    items = []
+    for s in target_symbols:
+        items.append(brain_lab_singleton.validate_ticker_deep(s))
+    return {
+        "status": "VERIFIED_ONLY",
+        "protocol": "SMTI-P (Symbological Microstructure Ticker Identification Protocol)",
+        "watchlist_count": len(items),
+        "items": items
+    }
+
 @app.post("/api/brain-lab/research")
 async def post_brain_lab_research(payload: dict):
     sym = (payload.get("symbol") or "IMCC").upper()
