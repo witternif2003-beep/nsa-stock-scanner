@@ -633,18 +633,23 @@ async def startup_event():
 async def get_brain_lab_status():
     telemetry = brain_lab_singleton.get_system_telemetry()
     # Populate top 4 runner research dossiers automatically
-    runners = await fetch_universe_scan(limit=4)
+    runners = fetch_universe_scan(limit=4)
     dossiers = []
     for r in runners:
+        def safe_num(v, default=0.0):
+            try:
+                return float(str(v).replace("x", "").replace("%", "").strip())
+            except Exception:
+                return default
         d = brain_lab_singleton.synthesize_research_dossier(
             symbol=r.get("symbol", ""),
-            price=float(r.get("price", 0)),
-            change_pct=float(r.get("change_pct", 0)),
-            volume=int(r.get("volume", 0)),
-            float_turnover=float(r.get("float_turnover", 1.0)),
-            gk_vol=float(r.get("gk_vol", 50.0)),
-            kyle_lambda=float(r.get("kyle_lambda", 0.05)),
-            hawkes_intensity=float(r.get("hawkes_intensity", 1.2))
+            price=safe_num(r.get("price", 0)),
+            change_pct=safe_num(r.get("change_pct", 0)),
+            volume=int(safe_num(r.get("volume", 0))),
+            float_turnover=safe_num(r.get("float_turnover", 1.0), 1.0),
+            gk_vol=safe_num(r.get("gk_vol", 50.0), 50.0),
+            kyle_lambda=safe_num(r.get("kyle_lambda", 0.05), 0.05),
+            hawkes_intensity=safe_num(r.get("hawkes_intensity", 1.2), 1.2)
         )
         dossiers.append(d)
     return {
