@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from brain_lab import brain_lab_singleton
+from brain_lab import brain_lab_singleton, safe_float
 # backend/server.py
 # NSA STOCK SCANNER · SERENITY-Ω — FastAPI backend
 # Stack: FastAPI + Motor (async MongoDB) + yfinance + JWT auth
@@ -14,7 +14,7 @@ import mongomock_motor
 from datetime import datetime, timedelta, timezone
 import jwt, os, asyncio, json, urllib.request, re, math, hashlib, binascii
 import yfinance as yf
-from typing import Optional
+from typing import Optional, Any, Dict, List
 from dotenv import load_dotenv
 import concurrent.futures
 
@@ -137,21 +137,32 @@ class ScanRequest(BaseModel):
     tickers: Optional[list[str]] = None
     auto_universe: bool = False
 
-def compute_postdoc_metrics(close: float, chg: float, vol: int, avgvol: float, h52: float, l52: float, perf_w: float, chg_open: float, float_shares: float = 0, relvol: float = 0, gap: float = 0, rsi7: float = 50.0) -> dict:
-    vol_exp = float(relvol) if relvol and float(relvol) > 0 else ((vol / avgvol) if avgvol and avgvol > 0 else 1.0)
-    float_to = (vol / float_shares) if float_shares and float_shares > 0 else vol_exp
+def compute_postdoc_metrics(close: Any, chg: Any, vol: Any, avgvol: Any, h52: Any, l52: Any, perf_w: Any, chg_open: Any, float_shares: Any = 0, relvol: Any = 0, gap: Any = 0, rsi7: Any = 50.0) -> dict:
+    c_val = max(0.0001, safe_float(close, 1.0))
+    chg_val = safe_float(chg, 0.0)
+    vol_val = max(0.0, safe_float(vol, 0.0))
+    avgvol_val = max(0.0, safe_float(avgvol, 0.0))
+    relvol_val = max(0.0, safe_float(relvol, 0.0))
+    float_shares_val = max(0.0, safe_float(float_shares, 0.0))
+    gap_val = safe_float(gap, 0.0)
+    rsi_val = safe_float(rsi7, 50.0)
+    chg_open_val = safe_float(chg_open, 0.0)
+    perf_w_val = safe_float(perf_w, chg_val)
+
+    vol_exp = relvol_val if relvol_val > 0 else ((vol_val / avgvol_val) if avgvol_val > 0 else 1.0)
+    float_to = (vol_val / float_shares_val) if float_shares_val > 0 else vol_exp
     
     # 1. Garman-Klass (1980) OHLC Volatility Estimator
-    high_est = close * (1.0 + max(1.0, abs(chg_open or 2.0)) / 100.0 * 0.7) if close > 0 else 1.0
-    low_est = max(0.0001, close * (1.0 - max(1.0, abs(chg_open or 2.0)) / 100.0 * 0.3))
-    open_est = close / (1.0 + (chg_open or 0.0) / 100.0) if close > 0 else 1.0
+    high_est = c_val * (1.0 + max(1.0, abs(chg_open_val or 2.0)) / 100.0 * 0.7)
+    low_est = max(0.0001, c_val * (1.0 - max(1.0, abs(chg_open_val or 2.0)) / 100.0 * 0.3))
+    open_est = c_val / (1.0 + chg_open_val / 100.0) if (1.0 + chg_open_val / 100.0) > 0.001 else c_val
     try:
         log_hl = math.log(max(1.0001, high_est / max(0.0001, low_est)))
-        log_co = math.log(max(1.0001, close / max(0.0001, open_est)))
+        log_co = math.log(max(1.0001, c_val / max(0.0001, open_est)))
         gk_var = 0.5 * (log_hl ** 2) - (2 * math.log(2) - 1) * (log_co ** 2)
         gk_vol = math.sqrt(max(0.0001, gk_var)) * math.sqrt(252) * 100.0
     except Exception:
-        gk_vol = abs(chg) * 1.6
+        gk_vol = abs(chg_val) * 1.6
 
     # 2. Corwin-Schultz (2012) High-Low Effective Bid-Ask Spread Estimator
     try:
@@ -164,14 +175,14 @@ def compute_postdoc_metrics(close: float, chg: float, vol: int, avgvol: float, h
         cs_spread = 15.0
 
     # 3. Kyle's Lambda (1985) Price Impact Microstructure: dP / dV
-    kyle_lambda = (abs(chg) / max(1000, vol)) * 1e6
+    kyle_lambda = (abs(chg_val) / max(1000.0, vol_val)) * 1e6
 
     # 4. Hawkes Point Process Intensity for Jump Clustering
-    hawkes_intensity = 0.85 + 0.45 * math.log1p(vol_exp) + 0.05 * abs(chg) + (0.02 * max(0.0, (rsi7 or 50) - 50))
+    hawkes_intensity = 0.85 + 0.45 * math.log1p(max(0.0, vol_exp)) + 0.05 * abs(chg_val) + (0.02 * max(0.0, rsi_val - 50))
 
     # 5. Post-Doctorate Conviction Score (P1 Tier-1 Calibration)
     vol_comp = min(30.0, (vol_exp / 2.0) * 10.0)
-    vel_comp = min(30.0, abs(chg) * 0.40 + (perf_w or 0) * 0.15)
+    vel_comp = min(30.0, abs(chg_val) * 0.40 + perf_w_val * 0.15)
     float_comp = min(20.0, math.log10(max(1.0, float_to)) * 10.0) if float_to > 1.0 else 5.0
     gk_comp = min(10.0, (gk_vol / 100.0) * 10.0)
     liq_comp = min(10.0, max(3.0, 10.0 - (cs_spread / 30.0)))
@@ -179,15 +190,15 @@ def compute_postdoc_metrics(close: float, chg: float, vol: int, avgvol: float, h
     conviction_score = round(min(100.0, max(60.0, raw_score)), 2)
 
     return {
-        "vol_exp": vol_exp,
+        "vol_exp": round(vol_exp, 2),
         "float_turnover": round(float_to, 2),
         "gk_vol": round(gk_vol, 2),
         "cs_spread_bps": round(cs_spread, 1),
         "kyle_lambda": round(kyle_lambda, 4),
         "hawkes_intensity": round(hawkes_intensity, 3),
         "score": conviction_score,
-        "gap": round(float(gap or 0), 2),
-        "rsi7": round(float(rsi7 or 50), 1),
+        "gap": round(gap_val, 2),
+        "rsi7": round(rsi_val, 1),
     }
 
 import concurrent.futures
@@ -758,6 +769,7 @@ async def validate_ticker_endpoint(symbol: str):
     return brain_lab_singleton.validate_ticker_deep(sym, quote)
 
 @app.post("/api/brain-lab/validate")
+@app.post("/brain-lab/validate")
 async def post_brain_lab_validate(payload: dict):
     sym = (payload.get("symbol") or "ZTG").upper().strip()
     quote = payload.get("quote") or {}
@@ -795,6 +807,7 @@ async def get_performance_match(symbol: str = "FEAM", spread: float = 0.025, lim
     return brain_lab_singleton.find_performance_matched_and_beefed(sym, universe, spread=spread, limit=limit)
 
 @app.post("/api/brain-lab/performance-match")
+@app.post("/brain-lab/performance-match")
 async def post_performance_match(payload: dict):
     sym = (payload.get("symbol") or "FEAM").upper().strip()
     spread = float(payload.get("spread", 0.025))
@@ -803,18 +816,19 @@ async def post_performance_match(payload: dict):
     return brain_lab_singleton.find_performance_matched_and_beefed(sym, universe, spread=spread, limit=limit)
 
 @app.post("/api/brain-lab/research")
+@app.post("/brain-lab/research")
 async def post_brain_lab_research(payload: dict):
     sym = (payload.get("symbol") or "IMCC").upper()
-    quote = await fetch_yahoo_v8_quote(sym)
+    quote = fetch_yahoo_v8_quote(sym)
     dossier = brain_lab_singleton.synthesize_research_dossier(
         symbol=sym,
-        price=float(quote.get("regularMarketPrice", 1.0)),
-        change_pct=float(quote.get("regularMarketChangePercent", 10.0)),
-        volume=int(quote.get("regularMarketVolume", 100000)),
-        float_turnover=float(quote.get("float_turnover", 5.0)),
-        gk_vol=float(quote.get("gk_vol", 65.0)),
-        kyle_lambda=float(quote.get("kyle_lambda", 0.12)),
-        hawkes_intensity=float(quote.get("hawkes_intensity", 2.4))
+        price=safe_float(quote.get("price") or quote.get("regularMarketPrice"), 1.0),
+        change_pct=safe_float(quote.get("change_pct") or quote.get("regularMarketChangePercent"), 10.0),
+        volume=int(safe_float(quote.get("volume") or quote.get("regularMarketVolume"), 100000)),
+        float_turnover=safe_float(quote.get("float_turnover"), 5.0),
+        gk_vol=safe_float(quote.get("gk_vol"), 65.0),
+        kyle_lambda=safe_float(quote.get("kyle_lambda"), 0.12),
+        hawkes_intensity=safe_float(quote.get("hawkes_intensity"), 2.4)
     )
     return dossier
 

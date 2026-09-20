@@ -37,6 +37,22 @@ def levenshtein_distance(s1: str, s2: str) -> int:
     return d[(len1 - 1, len2 - 1)]
 
 
+def safe_float(val: Any, default: float = 0.0) -> float:
+    """Safely converts input to a finite float, stripping currency, commas, and percentage signs."""
+    if val is None:
+        return default
+    if isinstance(val, (int, float)):
+        return float(val) if math.isfinite(float(val)) else default
+    try:
+        s = str(val).strip().replace(",", "").replace("$", "").replace("%", "").replace("x", "").replace("—", "").strip()
+        if not s:
+            return default
+        f = float(s)
+        return f if math.isfinite(f) else default
+    except (ValueError, TypeError):
+        return default
+
+
 VERIFIED_MARKET_RUNNERS = [
     {"symbol": "NB", "company_name": "Nanobiotix", "price": 1.85, "change_pct": 22.40, "volume": 12500000, "vol_exp": "18.2x", "float_turnover": "8.5x", "sec_cik": "0001760854"},
     {"symbol": "AMR", "company_name": "Alpha Metallurgical", "price": 168.0, "change_pct": 20.15, "volume": 1420000, "vol_exp": "14.1x", "float_turnover": "5.4x", "sec_cik": "0001704715"},
@@ -711,9 +727,9 @@ class BrainLabEngine:
             items[0]["rank"] = 1
             items[0]["tier"] = "TIER1"
             items[0]["autonomous_conviction"] = 100.0
+            items[0]["z_composite"] = 0.0
             return items
 
-        # Extract vectors for cross-sectional standardization
         ret_vals = []
         hawkes_vals = []
         turnover_vals = []
@@ -722,27 +738,21 @@ class BrainLabEngine:
         conviction_vals = []
 
         for item in items:
-            chg = float(item.get("change_pct", 0.0) or 0.0)
-            vol = float(item.get("volume", 0.0) or 0.0)
+            chg = safe_float(item.get("change_pct"), 0.0)
+            vol = safe_float(item.get("volume"), 0.0)
+            float_to = safe_float(item.get("float_turnover"), 0.5)
+            vol_exp = safe_float(item.get("vol_exp"), 1.0)
             
-            ft = item.get("float_turnover")
-            if isinstance(ft, str):
-                ft_clean = ft.replace("x", "").replace("—", "0").strip()
-                float_to = float(ft_clean) if ft_clean else 0.5
-            else:
-                float_to = float(ft or 0.5)
+            hi_default = 1.15 + 0.45 * math.log1p(max(0.0, float_to)) + 0.04 * abs(chg)
+            hi = safe_float(item.get("hawkes_intensity"), hi_default)
             
-            ve = item.get("vol_exp")
-            if isinstance(ve, str):
-                ve_clean = ve.replace("x", "").replace("—", "1").strip()
-                vol_exp = float(ve_clean) if ve_clean else 1.0
-            else:
-                vol_exp = float(ve or 1.0)
+            kyle_default = (abs(chg) / max(1000.0, vol)) * 1e6
+            kyle_lambda = safe_float(item.get("kyle_lambda"), kyle_default)
             
-            hi = float(item.get("hawkes_intensity", 1.15 + 0.45 * math.log1p(max(0.1, float_to)) + 0.04 * abs(chg)) or 1.5)
-            kyle_lambda = float(item.get("kyle_lambda", (abs(chg) / max(1000.0, vol)) * 1e6) or 0.5)
-            cs_spread = float(item.get("corwin_schultz_spread_bps", max(3.0, min(95.0, 11.5 + (kyle_lambda * 14.0)))) or 15.0)
-            conv_score = float(item.get("score", 75.0) or 75.0)
+            cs_default = max(3.0, min(95.0, 11.5 + (kyle_lambda * 14.0)))
+            cs_spread = safe_float(item.get("corwin_schultz_spread_bps"), cs_default)
+            
+            conv_score = safe_float(item.get("score"), 75.0)
 
             ret_vals.append(chg)
             hawkes_vals.append(hi)
@@ -752,10 +762,13 @@ class BrainLabEngine:
             conviction_vals.append(conv_score)
 
         def calc_z(vals: List[float]) -> List[float]:
-            mean = sum(vals) / len(vals)
-            var = sum((v - mean) ** 2 for v in vals) / max(1, len(vals) - 1)
+            clean_vals = [safe_float(v, 0.0) for v in vals]
+            if not clean_vals or len(clean_vals) <= 1:
+                return [0.0] * len(clean_vals)
+            mean = sum(clean_vals) / len(clean_vals)
+            var = sum((v - mean) ** 2 for v in clean_vals) / max(1, len(clean_vals) - 1)
             std = math.sqrt(var) if var > 1e-8 else 1.0
-            return [(v - mean) / std for v in vals]
+            return [round((v - mean) / std, 4) for v in clean_vals]
 
         z_ret = calc_z(ret_vals)
         z_hawkes = calc_z(hawkes_vals)
@@ -783,7 +796,7 @@ class BrainLabEngine:
             item["z_hawkes"] = round(z_hawkes[i], 3)
             item["z_turnover"] = round(z_turnover[i], 3)
 
-        items.sort(key=lambda x: (x["autonomous_conviction"], float(x.get("change_pct", 0.0))), reverse=True)
+        items.sort(key=lambda x: (safe_float(x.get("autonomous_conviction"), 0.0), safe_float(x.get("change_pct"), 0.0)), reverse=True)
 
         for rank_idx, item in enumerate(items):
             r = rank_idx + 1

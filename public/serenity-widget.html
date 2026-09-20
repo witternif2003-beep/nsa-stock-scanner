@@ -1097,32 +1097,35 @@
     });
   }
 
+  function safeNum(val, defaultVal = 0) {
+    if (val == null) return defaultVal;
+    if (typeof val === 'number') return isFinite(val) ? val : defaultVal;
+    const s = String(val).replace(/[,x$%—]/g, '').trim();
+    if (!s) return defaultVal;
+    const n = parseFloat(s);
+    return isFinite(n) ? n : defaultVal;
+  }
+
   function updateVerifiedRankingPipeline() {
     if (!allRunnersData || allRunnersData.length === 0) return;
 
     // Brain Lab By Liliya: Post-Doctorate Autonomous Microstructure Re-Ranking Model (PAMR-E)
-    // Cross-Sectional Z-Score Econometric Multi-Factor Standardization
-    const rets = allRunnersData.map(c => Number(c.change_pct) || 0);
-    const hawkes = allRunnersData.map(c => Number(c.hawkes_intensity) || (1.15 + 0.04 * Math.abs(Number(c.change_pct) || 0)));
-    const turnovers = allRunnersData.map(c => {
-      const raw = String(c.float_turnover || c.vol_exp || '1.0');
-      const val = parseFloat(raw.replace(/[^0-9.]/g, ''));
-      return isNaN(val) ? 1.0 : val;
-    });
-    const volexps = allRunnersData.map(c => {
-      const raw = String(c.vol_exp || '1.0');
-      const val = parseFloat(raw.replace(/[^0-9.]/g, ''));
-      return isNaN(val) ? 1.0 : val;
-    });
-    const spreads = allRunnersData.map(c => Number(c.corwin_schultz_spread_bps) || 20.0);
-    const convs = allRunnersData.map(c => Number(c.score) || 75.0);
+    // Cross-Sectional Z-Score Econometric Multi-Factor Standardization with complete input sanitization
+    const rets = allRunnersData.map(c => safeNum(c.change_pct, 0));
+    const hawkes = allRunnersData.map(c => safeNum(c.hawkes_intensity, 1.15 + 0.04 * Math.abs(safeNum(c.change_pct, 0))));
+    const turnovers = allRunnersData.map(c => safeNum(c.float_turnover, safeNum(c.vol_exp, 1.0)));
+    const volexps = allRunnersData.map(c => safeNum(c.vol_exp, 1.0));
+    const spreads = allRunnersData.map(c => safeNum(c.corwin_schultz_spread_bps, 20.0));
+    const convs = allRunnersData.map(c => safeNum(c.score, 75.0));
 
     function getZ(arr) {
-      if (arr.length <= 1) return arr.map(() => 0);
-      const mean = arr.reduce((acc, v) => acc + v, 0) / arr.length;
-      const variance = arr.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / Math.max(1, arr.length - 1);
-      const std = Math.sqrt(variance) || 1.0;
-      return arr.map(v => (v - mean) / std);
+      if (!arr || arr.length <= 1) return (arr || []).map(() => 0);
+      const clean = arr.map(v => (isFinite(v) ? v : 0));
+      const mean = clean.reduce((acc, v) => acc + v, 0) / clean.length;
+      const variance = clean.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / Math.max(1, clean.length - 1);
+      const std = Math.sqrt(variance);
+      const safeStd = isFinite(std) && std > 1e-7 ? std : 1.0;
+      return clean.map(v => Number(((v - mean) / safeStd).toFixed(4)));
     }
 
     const zRet = getZ(rets);
@@ -1137,12 +1140,12 @@
 
     allRunnersData.forEach((c, i) => {
       const zComp = (
-        wRet * zRet[i] +
-        wHawkes * zHawkes[i] +
-        wTurnover * zTurnover[i] +
-        wVol * zVolExp[i] +
-        wSpread * zSpread[i] +
-        wConv * zConv[i]
+        wRet * (zRet[i] || 0) +
+        wHawkes * (zHawkes[i] || 0) +
+        wTurnover * (zTurnover[i] || 0) +
+        wVol * (zVolExp[i] || 0) +
+        wSpread * (zSpread[i] || 0) +
+        wConv * (zConv[i] || 0)
       );
       c.autonomous_conviction = Number(Math.min(99.9, Math.max(50.0, 75.0 + zComp * 10.0)).toFixed(2));
       c.z_composite = Number(zComp.toFixed(3));
@@ -1150,9 +1153,9 @@
 
     // Sort in strict descending order of autonomous conviction score
     allRunnersData.sort((a, b) => {
-      const diff = (b.autonomous_conviction || 0) - (a.autonomous_conviction || 0);
+      const diff = safeNum(b.autonomous_conviction, 0) - safeNum(a.autonomous_conviction, 0);
       if (Math.abs(diff) > 0.001) return diff;
-      return (Number(b.change_pct) || 0) - (Number(a.change_pct) || 0);
+      return safeNum(b.change_pct, 0) - safeNum(a.change_pct, 0);
     });
 
     const now = Date.now();
